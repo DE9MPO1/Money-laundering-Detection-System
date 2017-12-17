@@ -43,7 +43,7 @@ class BucketContainer():
 def hashBasedBucketCount(tupleList):
     b = BucketContainer()
     for trans in tupleList:
-        bucketIndex = ((trans[0]*10) + trans[1]) % 7
+        bucketIndex = ((trans[0]*10) + trans[1]) % 10
         try:
             if trans not in b.bucket:
                 b.bucket[bucketIndex].append(trans)
@@ -68,11 +68,15 @@ def actualCount(tupleList):
         print(keys,actualCount[keys])
     return actualCount
 
-def filterOnActualCount(actualCount,minSupportCount):
+def filterOnActualCount(filteredBucketTuples,actualCount,minSupportCount):
+    filteredActualCount = {}
+    count = 0
     for keys in actualCount.keys():
-        if actualCount[keys] < minSupportCount:
-            del actualCount[keys]
-    return actualCount
+        if actualCount[keys] > minSupportCount and keys in filteredBucketTuples.keys():
+            filteredActualCount[keys] = actualCount[keys]
+            count +=1
+    print("Number of Transactions based on Actual Frequency : ",count)
+    return filteredActualCount
 
 def filterOnBucketCount(tupleList,bucketContainer,minSupportCount):
     itemSetCount = {}
@@ -86,6 +90,7 @@ def filterOnBucketCount(tupleList,bucketContainer,minSupportCount):
     for keys in itemSetCount.keys():
         print(keys,itemSetCount[keys])
     print("Number of filtered Transactions : ",count)
+    return itemSetCount
 
 print("Tuple List")
 tupleList = mapCustomers()
@@ -98,9 +103,9 @@ print("Hash Based Bucket Count : ")
 bucketContainer = hashBasedBucketCount(tupleList)
 
 print("Filtered transactions(On Basis of Bucket Count) : ")
-filterOnBucketCount(tupleList,bucketContainer,6)
+filteredBucketTuples = filterOnBucketCount(tupleList,bucketContainer,50)
 
 
 print("Filtered Transactions(On Basis of actual Frequency) : ")
-actualCount = filterOnActualCount(actualTransFreq,2)
+actualCount = filterOnActualCount(filteredBucketTuples,actualTransFreq,0)
 print(actualCount)
