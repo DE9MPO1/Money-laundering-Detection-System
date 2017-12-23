@@ -28,10 +28,14 @@ def mapCustomers():
                 tupleList.append(trans)
             except:
                 tupleList = [trans]
-        print(tupleList)
+
+        #for keys in customerMap.keys():
+        #    print(keys,customerMap[keys])
+        #print(tupleList)
         return tupleList
     except:
         print("Error in Mapping !!")
+        print("Please check if MongoDb server is On")
 
 
 class BucketContainer():
@@ -64,8 +68,8 @@ def actualCount(tupleList):
             actualCount[tuple] = 1
         else:
             actualCount[tuple] += 1
-    for keys in actualCount.keys():
-        print(keys,actualCount[keys])
+    #for keys in actualCount.keys():
+    #    print(keys,actualCount[keys])
     return actualCount
 
 def filterOnActualCount(filteredBucketTuples,actualCount,minSupportCount):
@@ -87,25 +91,8 @@ def filterOnBucketCount(tupleList,bucketContainer,minSupportCount):
         if(bucketContainer.bucketCount[key[0]] > minSupportCount):
             itemSetCount[tuple] = bucketContainer.bucketCount[key[0]]
             count += 1
-    for keys in itemSetCount.keys():
-        print(keys,itemSetCount[keys])
+    #for keys in itemSetCount.keys():
+        #print(keys,itemSetCount[keys])
     print("Number of filtered Transactions : ",count)
     return itemSetCount
 
-print("Tuple List")
-tupleList = mapCustomers()
-print("Total Number of Transactions : ",len(tupleList))
-
-print("Actual Frequency of Transactions : ")
-actualTransFreq = actualCount(tupleList)
-
-print("Hash Based Bucket Count : ")
-bucketContainer = hashBasedBucketCount(tupleList)
-
-print("Filtered transactions(On Basis of Bucket Count) : ")
-filteredBucketTuples = filterOnBucketCount(tupleList,bucketContainer,50)
-
-
-print("Filtered Transactions(On Basis of actual Frequency) : ")
-actualCount = filterOnActualCount(filteredBucketTuples,actualTransFreq,0)
-print(actualCount)
