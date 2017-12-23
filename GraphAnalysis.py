@@ -2,6 +2,8 @@
 from collections import defaultdict
 import GraphGeneration as gg
 import FrequentTransactions as ft
+import DisconnectedGraphs as dg
+
 # Class to represent a graph
 class Graph:
     def __init__(self, vertices):
@@ -30,6 +32,7 @@ class Graph:
     # topologicalSortUtil()
     def topologicalSort(self):
         # Mark all the vertices as not visited
+        print("Topological Sort")
         visited = [False] * self.V
         stack = []
 
@@ -51,7 +54,7 @@ def initializeGraph(edgeList):
     return g
 
 
-def mapTopologicalStack():
+def mapTopologicalStack(g):
     print("Mapping Nodes")
     mapOfNodes = {}
     count = 0
@@ -61,8 +64,8 @@ def mapTopologicalStack():
     print(mapOfNodes)
     return mapOfNodes
 
-def genEdgeWeights():
-    print("Assigning Edge Weights   ")
+def genEdgeWeights(g):
+    print("Assigning Edge Weights  ")
     edgeWeights = []
     for k,v in  g.graph.items():
         if v != []:
@@ -77,21 +80,26 @@ def genEdgeWeights():
     return edgeWeights
 
 #edgeWeigths = [{1:5,2:3},{2:2,3:6},{3:7,4:4,5:2},{4:-1,5:1},{5:-2}]
-def longestDistance(nodeValues):
+def longestDistance(nodeValues,mapOfNodes,g):
 
     #nodeValues = {1:0,2:-1000,3:-1000,4:-1000,5:-1000,6:-1000}
-    mapOfNodes = mapTopologicalStack()
-    edgeWeights = genEdgeWeights()
+    edgeWeights = genEdgeWeights(g)
+    print(edgeWeights)
 
     print("Longest Distance Function : ")
+    #print("len ",len(nodeValues.keys()))
     for node in nodeValues.keys():
-        for key in edgeWeights[mapOfNodes[node]].keys():
-            nodeVal = nodeValues[node] #0
-            edgeWt = edgeWeights[mapOfNodes[node]][key] #eW[4][2] = 1
-            newNodeVal = nodeVal + edgeWt #1
-            if nodeValues[key] < newNodeVal:
-                nodeValues[key] = newNodeVal
-        print(nodeValues)
+        try:
+            #print(edgeWeights[mapOfNodes[node]])
+            for key in edgeWeights[mapOfNodes[node]].keys():
+                nodeVal = nodeValues[node] #0
+                edgeWt = edgeWeights[mapOfNodes[node]][key] #eW[4][2] = 1
+                newNodeVal = nodeVal + edgeWt #1
+                if nodeValues[key] < newNodeVal:
+                    nodeValues[key] = newNodeVal
+        except:
+            print("Exception!!!")
+    print(nodeValues)
 
 print("Tuple List")
 tupleList = ft.mapCustomers()
@@ -118,19 +126,50 @@ print(actualCount)
 #        edgeList.append(keys)
 #   except:
 #        edgeList = [keys]
-edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
+edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8),(8,9),(8,10),(9,10)]
+print("Edge List")
+print(edgeList)
 
 g = initializeGraph(edgeList)
 graph = gg.generateGraph(edgeList)
-
 vertices = gg.getVertices(edgeList)
 indegreeMap = gg.getIndegree(vertices,graph)
 outdegreeMap = gg.getOutDegree(vertices,graph)
+#Getting the sourceNodes
+sourceNodes = dg.getSourceNodes(indegreeMap)
+newEdgeList = dg.splitEdgeList(edgeList,graph,sourceNodes)
 
-#nodeValues = gg.genNodeValues(vertices,indegreeMap)
 
+print("Vertex Set after splitting")
+vertexSet = []
+count = 0
+for edgeList in newEdgeList:
+    try:
+        vertexSet.append(dg.depthFirstSearch(edgeList,graph,sourceNodes[count]))
+    except:
+        vertexSet = [dg.depthFirstSearch(edgeList,graph,sourceNodes[count])]
+    count += 1
+
+print("New Node Values after splitting")
+newNodeValues = []
+count = 0
+for vertices in vertexSet:
+    try:
+        newNodeValues.append(gg.genNodeValues(vertices,sourceNodes[count]))
+    except:
+        newNodeValues = [gg.genNodeValues(vertices,sourceNodes[count])]
+    count += 1
 
 #print("Following is a Topological Sort of the given graph")
+
 #TSN = g.topologicalSort()
 #longestDistance(nodeValues)
+
+for count in range(2):
+    print("Edge List")
+    print(newEdgeList[count])
+    g = initializeGraph(newEdgeList[count])
+    g.topologicalSort()
+    mapOfNodes = mapTopologicalStack(g)
+    longestDistance(newNodeValues[count],mapOfNodes,g)
 
