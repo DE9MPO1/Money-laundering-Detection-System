@@ -1,16 +1,6 @@
 import pymongo
 import openpyxl
 client = pymongo.MongoClient()
-db = client.test
-url = "www.manishjathan.com"
-name = "Manish Jathan"
-site = db.sites.find_one()
-if site['url'] != url and site['name'] != name:
-    db.sites.insert({"url" : url,"name" : name})
-else:
-    print(url)
-    print(name)
-    print("Record already Present")
 
 #Creating a new table in Mongo
 #containing Banking Transactions
@@ -42,15 +32,20 @@ except:
 import fileinput
 wb = openpyxl.load_workbook('Book1.xlsx')
 sheet = wb.get_sheet_by_name('Sheet1')
+#row will contain individual rows of the excel sheet
 row = []
+#row list contains all the rows of excel sheet
 row_list = []
-for i in range(2,50):
+#from 2nd to 1000th row
+for i in range(2,1000):
     row = []
+    #from 1st to 11th column
     for j in range(1,11):
         row.append(sheet.cell(row=i, column=j).value)
     row_list.append(row)
 
 
+#Defining the Schema with some default values
 document = {
             "hour":0,
             "type":"",
@@ -67,7 +62,9 @@ document = {
 keys = []
 for key in document.keys():
     keys.append(key)
+#Keys List contains all the attributes of Dictionary Object
 
+#Bulk Data is a List of dictionary objects which will be inserted into MongoDB database as a JSON object.
 bulkData = []
 for row in row_list:
     index = 0

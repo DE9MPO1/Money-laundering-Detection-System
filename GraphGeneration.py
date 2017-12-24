@@ -1,5 +1,12 @@
 
 def generateGraph(tupleList):
+    """
+    Description : Generates a graph from the edgeList containing edges
+                  in the form of tuple.
+    input : [(7, 8), (8, 9), (8, 10), (9, 10)]
+    output : {7: [8], 8: [9, 10], 9: [10]}
+    7 has an edge to vertex 8, 8 has an edge to vertex 9 and 10, 9 has an edge to vertex 10
+    """
     print("Generate Graph")
     graph = {}
     for tuple in tupleList:
@@ -11,6 +18,11 @@ def generateGraph(tupleList):
     return graph
 
 def getVertices(tupleList):
+    """
+    Description : gets the vertices of the graph from the edgeList
+    input : [(7, 8), (8, 9), (8, 10), (9, 10)]
+    output: [7,8,9,10]
+    """
     print("Get Vertices of a Graph")
     vertices = []
     for tuple in tupleList:
@@ -26,6 +38,11 @@ def getVertices(tupleList):
     return vertices
 
 def getIndegree(vertices,graph):
+    """
+    Desciption : gets the indegree Map of the vertices of the graph
+    input : [7,8,9,10],{7: [8], 8: [9, 10], 9: [10]}
+    output : {7 : 0, 8 : 1, 9 : 1, 10 : 2}
+    """
     print("Get Indegree of all vertices")
     indegreeMap = {}
     for node in vertices:
@@ -38,6 +55,11 @@ def getIndegree(vertices,graph):
     return indegreeMap
 
 def getOutDegree(vertices,graph):
+    """
+        Desciption : gets the outdegree Map of the vertices of the graph
+        input : [7,8,9,10],{7: [8], 8: [9, 10], 9: [10]}
+        output : {7 : 1, 8 : 2, 9 : 1, 10 : 0}
+    """
     print("Get OutDegree of all vertices")
     outDegreeMap = {}
     for node in vertices:
@@ -49,11 +71,15 @@ def getOutDegree(vertices,graph):
     return outDegreeMap
 
 
-def genNodeValues(vertices,indegreeMap):
+def genNodeValues(vertices,sourceNode):
+    """
+        Desciption : generates Node Values for the vertices of the graph
+                     sourceNode with a indegree of zero has a value of 0
+                     and remaining nodes have a value of -1000
+        input : [7,8,9,10],7
+        output : {7 : 0, 8 : -1000, 9 : -1000, 10 : -1000}
+    """
     nodeValues = {}
-    for k,v in indegreeMap.items():
-        if v == 0:
-            sourceNode = k
     for vertex in vertices:
         if vertex == sourceNode:
             nodeValues[vertex] = 0
