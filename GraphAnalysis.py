@@ -46,7 +46,14 @@ class Graph:
         print(stack)
         return stack
 
+
 def initializeGraph(edgeList):
+    """
+        Initializes th graph
+        Input : Number of Edges
+                Edges in the form of tuple
+        Output: returns graph object
+    """
     g = Graph(len(edgeList))
     for edges in edgeList:
         g.addEdge(edges[0],edges[1])
@@ -55,6 +62,11 @@ def initializeGraph(edgeList):
 
 
 def mapTopologicalStack(g):
+    """
+        Maps the vertices/nodes of the topologically sorted graph
+        Input : vertices of the graph (3,2,1,0)
+        Output : returns map of nodes (3:0,2:1,1:2,0:3)
+    """
     print("Mapping Nodes")
     mapOfNodes = {}
     count = 0
@@ -65,6 +77,14 @@ def mapTopologicalStack(g):
     return mapOfNodes
 
 def genEdgeWeights(g):
+    """
+            Initializes the edge weights of the graph to one
+            Input : [1:[2,3], 2:[3,4], 3:[4,5,6], 4: [5,6], 5:[6]]
+                    Here key is the vertex of the graph
+                    and Value is a list of vertices to which the key vertex is connected,
+                    forming an edge.
+            Output : [{2: 1, 3: 1}, {3: 1, 4: 1}, {4: 1, 5: 1, 6: 1}, {5: 1, 6: 1}, {6: 1}]
+    """
     print("Assigning Edge Weights  ")
     edgeWeights = []
     for k,v in  g.graph.items():
@@ -79,10 +99,14 @@ def genEdgeWeights(g):
     print(edgeWeights)
     return edgeWeights
 
-#edgeWeigths = [{1:5,2:3},{2:2,3:6},{3:7,4:4,5:2},{4:-1,5:1},{5:-2}]
 def longestDistance(nodeValues,mapOfNodes,g):
-
-    #nodeValues = {1:0,2:-1000,3:-1000,4:-1000,5:-1000,6:-1000}
+    """
+    Description : Finds the Longest Distance between source Nodes and other Nodes in the graph
+          Input : nodeValues = {1:0,2:-1000,3:-1000,4:-1000,5:-1000,6:-1000}
+                  g = [1:[2,3], 2:[3,4], 3:[4,5,6], 4: [5,6], 5:[6]]
+                  edgeWeights = [{2: 1, 3: 1}, {3: 1, 4: 1}, {4: 1, 5: 1, 6: 1}, {5: 1, 6: 1}, {6: 1}]
+         Output : nodeValues = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5}}
+    """
     edgeWeights = genEdgeWeights(g)
     print(edgeWeights)
 
@@ -126,50 +150,55 @@ print(actualCount)
 #        edgeList.append(keys)
 #   except:
 #        edgeList = [keys]
-edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8),(8,9),(8,10),(9,10)]
-print("Edge List")
-print(edgeList)
-
-g = initializeGraph(edgeList)
-graph = gg.generateGraph(edgeList)
-vertices = gg.getVertices(edgeList)
-indegreeMap = gg.getIndegree(vertices,graph)
-outdegreeMap = gg.getOutDegree(vertices,graph)
-#Getting the sourceNodes
-sourceNodes = dg.getSourceNodes(indegreeMap)
-newEdgeList = dg.splitEdgeList(edgeList,graph,sourceNodes)
 
 
-print("Vertex Set after splitting")
-vertexSet = []
-count = 0
-for edgeList in newEdgeList:
-    try:
-        vertexSet.append(dg.depthFirstSearch(edgeList,graph,sourceNodes[count]))
-    except:
-        vertexSet = [dg.depthFirstSearch(edgeList,graph,sourceNodes[count])]
-    count += 1
+def main():
 
-print("New Node Values after splitting")
-newNodeValues = []
-count = 0
-for vertices in vertexSet:
-    try:
-        newNodeValues.append(gg.genNodeValues(vertices,sourceNodes[count]))
-    except:
-        newNodeValues = [gg.genNodeValues(vertices,sourceNodes[count])]
-    count += 1
-
-#print("Following is a Topological Sort of the given graph")
-
-#TSN = g.topologicalSort()
-#longestDistance(nodeValues)
-
-for count in range(2):
+    edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8),(8,9),(8,10),(9,10)]
     print("Edge List")
-    print(newEdgeList[count])
-    g = initializeGraph(newEdgeList[count])
-    g.topologicalSort()
-    mapOfNodes = mapTopologicalStack(g)
-    longestDistance(newNodeValues[count],mapOfNodes,g)
+    print(edgeList)
 
+    g = initializeGraph(edgeList)
+    graph = gg.generateGraph(edgeList)
+    vertices = gg.getVertices(edgeList)
+    indegreeMap = gg.getIndegree(vertices,graph)
+    outdegreeMap = gg.getOutDegree(vertices,graph)
+
+
+    #Getting the sourceNodes
+    sourceNodes = dg.getSourceNodes(indegreeMap)
+    newEdgeList = dg.splitEdgeList(edgeList,graph,sourceNodes)
+
+
+    print("Vertex Set after splitting")
+    vertexSet = []
+    count = 0
+    for edgeList in newEdgeList:
+        try:
+            vertexSet.append(dg.depthFirstSearch(edgeList,graph,sourceNodes[count]))
+        except:
+            vertexSet = [dg.depthFirstSearch(edgeList,graph,sourceNodes[count])]
+        count += 1
+
+    print("New Node Values after splitting")
+    newNodeValues = []
+    count = 0
+    for vertices in vertexSet:
+        try:
+            newNodeValues.append(gg.genNodeValues(vertices,sourceNodes[count]))
+        except:
+            newNodeValues = [gg.genNodeValues(vertices,sourceNodes[count])]
+        count += 1
+
+    count = 0
+    for edgeList in newEdgeList:
+        print("Edge List")
+        print(edgeList)
+        g = initializeGraph(edgeList)
+        g.topologicalSort()
+        mapOfNodes = mapTopologicalStack(g)
+        longestDistance(newNodeValues[count],mapOfNodes,g)
+        count += 1
+
+
+main()
