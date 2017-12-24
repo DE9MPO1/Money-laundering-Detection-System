@@ -1,6 +1,6 @@
 import pymongo
-import numpy as np
-from pandas import Series,DataFrame
+#import numpy as np
+#from pandas import Series,DataFrame
 
 #Connecting with the database
 client = pymongo.MongoClient()
@@ -9,6 +9,18 @@ db = client.MoneyLaundering
 #Mapping CustomerId with Number
 #Forming a tuple List
 def mapCustomers():
+
+    """
+    Description: Maps the customer ID with a number
+
+    Input: All the transactions from MongoDB database
+    (nameOrig : Id of Customer from whom the transfer is done)
+    (nameDest : Id of Customer to whom the transfer is done)
+
+    Output: A map of customer Id with a number
+            { 'C1231006815' : 0,
+              'M1979787155' : 1}
+    """
     try:
         customerMap = {}
         tupleList = []
@@ -39,12 +51,29 @@ def mapCustomers():
 
 
 class BucketContainer():
+    """
+    Description : It is a class containing bucket and bucketCount.
+                  bucket contains the list of transactions mapped to a bucket.
+                  bucketCount contains the count of transactions in each bucket.
+    """
     def __init__(self):
         self.bucket = {}
         self.bucketCount = {}
 
 
 def hashBasedBucketCount(tupleList):
+    """
+        Description : Hashes the transaction(obtained after mapping)to a bucket
+                      based on the hashing formula.
+                      Also maintains the count of transactions in each bucket using
+                      bucketCount.
+        Input  : transactions in tuple list [(1,2),(1,3),(2,3)(2,5)]
+        Output :   b
+                    {
+                     bucket  = { 2:[(1,2)], 3:[(1,3),(2,3)] , 5:[(2,5)] }
+                     bucketCount = {2 : 1 , 3 : 2, 5 : 1}
+                    }
+    """
     b = BucketContainer()
     for trans in tupleList:
         bucketIndex = ((trans[0]*10) + trans[1]) % 10
@@ -62,6 +91,11 @@ def hashBasedBucketCount(tupleList):
     return b
 
 def actualCount(tupleList):
+    """
+    Description : Frequency of individual Transactions
+    input : tupleList containing all the transactions [(1,2),(2,3),(1,2),(3,4)]
+    output : actualCount = {(1,2) : 2, (2,3) : 1, (3,4) : 1}
+    """
     actualCount = {}
     for tuple in tupleList:
         if tuple not in actualCount.keys():
@@ -73,6 +107,10 @@ def actualCount(tupleList):
     return actualCount
 
 def filterOnActualCount(filteredBucketTuples,actualCount,minSupportCount):
+    """
+    Description : Filters the transactions from the obtained filtered Buckets
+                  based on the minimum support count defined for transactions
+    """
     filteredActualCount = {}
     count = 0
     for keys in actualCount.keys():
@@ -83,6 +121,10 @@ def filterOnActualCount(filteredBucketTuples,actualCount,minSupportCount):
     return filteredActualCount
 
 def filterOnBucketCount(tupleList,bucketContainer,minSupportCount):
+    """
+    Description : Filters the bucket on basis of minimum
+                  Support Count defined for buckets
+    """
     itemSetCount = {}
     count = 0
     for tuple in tupleList:
