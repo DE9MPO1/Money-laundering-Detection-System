@@ -107,6 +107,7 @@ def longestDistance(nodeValues,mapOfNodes,g):
                   edgeWeights = [{2: 1, 3: 1}, {3: 1, 4: 1}, {4: 1, 5: 1, 6: 1}, {5: 1, 6: 1}, {6: 1}]
          Output : nodeValues = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5}}
     """
+    longestPathEdges = {}
     edgeWeights = genEdgeWeights(g)
     print(edgeWeights)
 
@@ -115,44 +116,52 @@ def longestDistance(nodeValues,mapOfNodes,g):
     for node in nodeValues.keys():
         try:
             #print(edgeWeights[mapOfNodes[node]])
+            print(node,edgeWeights[mapOfNodes[node]].keys())
+
             for key in edgeWeights[mapOfNodes[node]].keys():
                 nodeVal = nodeValues[node] #0
                 edgeWt = edgeWeights[mapOfNodes[node]][key] #eW[4][2] = 1
                 newNodeVal = nodeVal + edgeWt #1
                 if nodeValues[key] < newNodeVal:
                     nodeValues[key] = newNodeVal
+                    try:
+                        longestPathEdges[key].append(node,key)
+                    except:
+                        longestPathEdges[key] = [node,key]
         except:
             print("Exception!!!")
     print(nodeValues)
+    print(longestPathEdges)
 
-print("Tuple List")
-tupleList = ft.mapCustomers()
-print("Total Number of Transactions : ",len(tupleList))
+def getlongestPath(longestPathEdges,destNode,sourceNode):
 
-print("Actual Frequency of Transactions : ")
-actualTransFreq = ft.actualCount(tupleList)
+    longestPath = [longestPathEdges[destNode]]
+    prevNode = longestPathEdges[destNode][0]
+    while prevNode != sourceNode:
+        longestPath.append(longestPathEdges[prevNode])
+        prevNode = longestPathEdges[prevNode][0]
 
-print("Hash Based Bucket Count : ")
-bucketContainer = ft.hashBasedBucketCount(tupleList)
-
-print("Filtered transactions(On Basis of Bucket Count) : ")
-filteredBucketTuples = ft.filterOnBucketCount(tupleList,bucketContainer,120)
-
-print("Filtered Transactions(On Basis of actual Frequency) : ")
-actualCount = ft.filterOnActualCount(filteredBucketTuples,actualTransFreq,0)
-print(actualCount)
-
-
-
-#edgeList = []
-#for keys in actualCount.keys():
-#    try:
-#        edgeList.append(keys)
-#   except:
-#        edgeList = [keys]
+    print(longestPath)
 
 
 def main():
+
+    print("Tuple List")
+    tupleList = ft.mapCustomers()
+    print("Total Number of Transactions : ", len(tupleList))
+
+    print("Actual Frequency of Transactions : ")
+    actualTransFreq = ft.actualCount(tupleList)
+
+    print("Hash Based Bucket Count : ")
+    bucketContainer = ft.hashBasedBucketCount(tupleList)
+
+    print("Filtered transactions(On Basis of Bucket Count) : ")
+    filteredBucketTuples = ft.filterOnBucketCount(tupleList, bucketContainer, 120)
+
+    print("Filtered Transactions(On Basis of actual Frequency) : ")
+    actualCount = ft.filterOnActualCount(filteredBucketTuples, actualTransFreq, 0)
+    print(actualCount)
 
     edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8),(8,9),(8,10),(9,10)]
     print("Edge List")
@@ -199,6 +208,8 @@ def main():
         mapOfNodes = mapTopologicalStack(g)
         longestDistance(newNodeValues[count],mapOfNodes,g)
         count += 1
-
-
+    print("Longest Paths : ")
+    getlongestPath({8: [7, 8], 9: [8, 9], 10: [9, 10]},10,7)
+    print("Longest Paths : ")
+    getlongestPath({2: [1, 2], 3: [2, 3], 4: [3, 4], 5: [4, 5], 6: [5, 6]}, 6, 1)
 main()
