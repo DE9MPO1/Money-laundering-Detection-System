@@ -3,6 +3,7 @@ from collections import defaultdict
 import GraphGeneration as gg
 import FrequentTransactions as ft
 import DisconnectedGraphs as dg
+import pymongo
 
 # Class to represent a graph
 class Graph:
@@ -142,6 +143,26 @@ def getlongestPath(longestPathEdges,destNode,sourceNode):
         prevNode = longestPathEdges[prevNode][0]
 
     print(longestPath)
+    return longestPath
+
+
+def getTransactionInformation(longestPath):
+
+    client = pymongo.MongoClient()
+    db = client.MoneyLaundering
+    mappedTransactions = db.mappedTransactions
+    print("Transactions involved in longest Path : \n")
+    for path in longestPath:
+        orig = mappedTransactions.find({'tupleId' : path[0]}, {'customerId': 1,'_id': 0})
+        dest = mappedTransactions.find({'tupleId' : path[1]}, {'customerId': 1,'_id': 0})
+        print(orig[0]['customerId'],dest[0]['customerId'])
+        transactInfo = db.bankingTransactions.find({'nameOrig' : orig[0]['customerId'],'nameDest' : dest[0]['customerId']})
+        print("Transaction Info : ")
+        for info in transactInfo:
+            for k,v in info.items():
+                print(k,v)
+        print("\n")
+
 
 
 def main():
@@ -208,8 +229,13 @@ def main():
         mapOfNodes = mapTopologicalStack(g)
         longestDistance(newNodeValues[count],mapOfNodes,g)
         count += 1
-    print("Longest Paths : ")
-    getlongestPath({8: [7, 8], 9: [8, 9], 10: [9, 10]},10,7)
-    print("Longest Paths : ")
-    getlongestPath({2: [1, 2], 3: [2, 3], 4: [3, 4], 5: [4, 5], 6: [5, 6]}, 6, 1)
+
+    print("Longest Path for dest = %d and source = %d" %(10,7))
+    longestPath = getlongestPath({8: [7, 8], 9: [8, 9], 10: [9, 10]},10,7)
+    getTransactionInformation(longestPath)
+
+    print("Longest Path for dest = %d and source = %d" % (6, 1))
+    longestPath  = getlongestPath({2: [1, 2], 3: [2, 3], 4: [3, 4], 5: [4, 5], 6: [5, 6]}, 6, 1)
+    getTransactionInformation(longestPath)
+
 main()
