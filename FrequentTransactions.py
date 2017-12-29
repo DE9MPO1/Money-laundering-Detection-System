@@ -3,6 +3,7 @@ import pymongo
 #from pandas import Series,DataFrame
 
 #Connecting with the database
+
 client = pymongo.MongoClient()
 db = client.MoneyLaundering
 
@@ -17,33 +18,62 @@ def mapCustomers():
     (nameOrig : Id of Customer from whom the transfer is done)
     (nameDest : Id of Customer to whom the transfer is done)
 
-    Output: A map of customer Id with a number
+    Output:  A map of customer Id with a number
+            customerMap :
             { 'C1231006815' : 0,
               'M1979787155' : 1}
+            tupleList :
+            [(0,1),(1,2)...]
     """
     try:
         customerMap = {}
         tupleList = []
-        transactions = db.bankingTransactions
+        transactions = db.bankingTransactions #Contains all the banking Transactions
+        mappedTransactions = db.mappedTransactions #Contains all the mapped Transactions
+        rowInsert = []
+        """
+        [
+        {"customerId" : nameOrig,
+         "tupleId" : 1},
+        {"customerId" : nameDest,
+         "tupleId" : 2}
+        ]
+        """
         fromToTuple = transactions.find({},{'nameOrig':1,'nameDest':1,'_id':0})
         count = 0
         for transaction in fromToTuple:
+
             if transaction['nameOrig'] not in customerMap.keys():
                 customerMap[transaction['nameOrig']] = count
+                #Insertion into Mapped Transactions Database
+                try:
+                    rowInsert.append({"customerId": transaction['nameOrig'], "tupleId" : count})
+                except:
+                    rowInsert = [{"customerId": transaction['nameOrig'], "tupleId" : count}]
                 count += 1
+
             if transaction['nameDest'] not in customerMap.keys():
                 customerMap[transaction['nameDest']] = count
+                # Insertion into Mapped Transactions Database
+                try:
+                    rowInsert.append({"customerId": transaction['nameDest'], "tupleId": count})
+                except:
+                    rowInsert = [{"customerId": transaction['nameDest'], "tupleId": count}]
                 count += 1
+
+
             #print("%d -> %d" % (customerMap[transaction['nameOrig']], customerMap[transaction['nameDest']]))
             trans = (customerMap[transaction['nameOrig']],customerMap[transaction['nameDest']])
             try:
+                mappedTransactions.insert(rowInsert)
+                rowInsert = []
                 tupleList.append(trans)
             except:
                 tupleList = [trans]
 
-        #for keys in customerMap.keys():
-        #    print(keys,customerMap[keys])
-        #print(tupleList)
+        for keys in customerMap.keys():
+            print(keys,customerMap[keys])
+        print(tupleList)
         return tupleList
     except:
         print("Error in Mapping !!")
