@@ -1,12 +1,41 @@
 from tkinter import *
 from MongoConnection import LoadData
-
+import FrequentTransactions as ft
 
 def createDatabase():
     excelSheet = e1.get()
     sheetName = e6.get()
     numberOfRecords = e7.get()
     LoadData(str(excelSheet),str(sheetName),int(numberOfRecords))
+
+def showFrequentTransactions():
+    print("Tuple List")
+    tupleList = ft.mapCustomers()
+    print("Total Number of Transactions : ", len(tupleList))
+
+    print("Actual Frequency of Transactions : ")
+    actualTransFreq = ft.actualCount(tupleList)
+
+    print("Hash Based Bucket Count : ")
+    bucketContainer = ft.hashBasedBucketCount(tupleList)
+
+    bucketThreshold = e2.get()
+    print("Filtered transactions(On Basis of Bucket Count) : ")
+    filteredBucketTuples = ft.filterOnBucketCount(tupleList, bucketContainer, int(bucketThreshold))
+    e4.insert(0,len(filteredBucketTuples))
+
+    actualCountThreshold = e3.get()
+    print("Filtered Transactions(On Basis of actual Frequency) : ")
+    actualCount = ft.filterOnActualCount(filteredBucketTuples, actualTransFreq, int(actualCountThreshold))
+    e5.insert(0,len(actualCount))
+
+    print(actualCount)
+
+    for k,v in actualCount.items():
+        list1.insert(END, k)
+
+
+
 
 
 window = Tk()
@@ -54,8 +83,8 @@ e3 = Entry(topFrame,textvariable=t3)
 e3.grid(row = 5,column = 2,pady = 5)
 
 #Get Frequent Transactions
-button1 = Button(topFrame, text = "Get frequent transactions")
-button1.grid(row = 6,column = 2,pady = 5)
+button2 = Button(topFrame, text = "Get frequent transactions",command = showFrequentTransactions)
+button2.grid(row = 6,column = 2,pady = 5)
 
 l3 = Label(topFrame,text = "Number of filtered Transactions from Bucket : ")
 l3.grid(row = 7, column = 0,columnspan = 2,pady = 5)
