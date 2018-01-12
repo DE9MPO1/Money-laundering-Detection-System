@@ -48,6 +48,19 @@ def getSourceNodes(indegreeMap):
     print(sourceNodes)
     return sourceNodes
 
+def getDestNodes(outdegreeMap):
+    print("Destination Nodes")
+    destNodes = []
+    for k,v in outdegreeMap.items():
+        if v == 0:
+            try:
+                destNodes.append(k)
+            except:
+                destNodes = [k]
+    print(destNodes)
+    return destNodes
+
+
 def splitEdgeList(edgeList,graph,sourceNodes):
     newEdgeList = []
     for sourceNode in sourceNodes:

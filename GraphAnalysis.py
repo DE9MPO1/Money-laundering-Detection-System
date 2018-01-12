@@ -147,23 +147,45 @@ def getlongestPath(longestPathEdges,destNode,sourceNode):
 
 
 def getTransactionInformation(longestPath):
-
+    transactionList = []
     client = pymongo.MongoClient()
     db = client.MoneyLaundering
     mappedTransactions = db.mappedTransactions
     print("Transactions involved in longest Path : \n")
     for path in longestPath:
+        transactionInfo  = {}
         orig = mappedTransactions.find({'tupleId' : path[0]}, {'customerId': 1,'_id': 0})
         dest = mappedTransactions.find({'tupleId' : path[1]}, {'customerId': 1,'_id': 0})
-        print(orig[0]['customerId'],dest[0]['customerId'])
+
+        transactionInfo["nameOrig"] = orig[0]['customerId']
+        transactionInfo["nameDest"] = dest[0]['customerId']
+
         transactInfo = db.bankingTransactions.find({'nameOrig' : orig[0]['customerId'],'nameDest' : dest[0]['customerId']})
-        print("Transaction Info : ")
+
         for info in transactInfo:
             for k,v in info.items():
-                print(k,v)
-        print("\n")
+                transactionInfo[k] = v
+        try:
+            transactionList.append(transactionInfo)
+        except:
+            transactionList = [transactionInfo]
+    return transactionList
 
+def getCustomerId(nodeList):
+    nodeMap = []
+    client = pymongo.MongoClient()
+    db = client.MoneyLaundering
 
+    for node in nodeList:
+        customer = db.mappedTransactions.find({'tupleId' : node},{'customerId':1,'_id':0})
+        for info in customer:
+            for k,v in info.items():
+                try:
+                    nodeMap.append(v)
+                except:
+                    nodeMap = [v]
+
+    return nodeMap
 
 def main():
 
@@ -178,7 +200,7 @@ def main():
     bucketContainer = ft.hashBasedBucketCount(tupleList)
 
     print("Filtered transactions(On Basis of Bucket Count) : ")
-    filteredBucketTuples = ft.filterOnBucketCount(tupleList, bucketContainer, 120)
+    filteredBucketTuples = ft.filterOnBucketCount(tupleList, bucketContainer, 50)
 
     print("Filtered Transactions(On Basis of actual Frequency) : ")
     actualCount = ft.filterOnActualCount(filteredBucketTuples, actualTransFreq, 0)
@@ -194,11 +216,9 @@ def main():
     indegreeMap = gg.getIndegree(vertices,graph)
     outdegreeMap = gg.getOutDegree(vertices,graph)
 
-
     #Getting the sourceNodes
     sourceNodes = dg.getSourceNodes(indegreeMap)
     newEdgeList = dg.splitEdgeList(edgeList,graph,sourceNodes)
-
 
     print("Vertex Set after splitting")
     vertexSet = []
@@ -224,6 +244,7 @@ def main():
     for edgeList in newEdgeList:
         print("Edge List")
         print(edgeList)
+        getTransactionInformation(edgeList)
         g = initializeGraph(edgeList)
         g.topologicalSort()
         mapOfNodes = mapTopologicalStack(g)
@@ -238,4 +259,4 @@ def main():
     longestPath  = getlongestPath({2: [1, 2], 3: [2, 3], 4: [3, 4], 5: [4, 5], 6: [5, 6]}, 6, 1)
     getTransactionInformation(longestPath)
 
-main()
+#main()
