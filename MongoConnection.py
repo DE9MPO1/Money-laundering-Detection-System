@@ -80,3 +80,4 @@ def LoadData(excelSheet,sheetName,numberOfRecords):
 
     #Inserting bulk Data
     db.bankingTransactions.insert(bulkData)
+    print("All Data successfully Inserted")

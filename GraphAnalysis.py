@@ -47,7 +47,6 @@ class Graph:
         print(stack)
         return stack
 
-
 def initializeGraph(edgeList):
     """
         Initializes th graph
@@ -58,9 +57,8 @@ def initializeGraph(edgeList):
     g = Graph(len(edgeList))
     for edges in edgeList:
         g.addEdge(edges[0],edges[1])
-    #print(g.graph)
+    print(g.graph)
     return g
-
 
 def mapTopologicalStack(g):
     """
@@ -145,7 +143,6 @@ def getlongestPath(longestPathEdges,destNode,sourceNode):
     print(longestPath)
     return longestPath
 
-
 def getTransactionInformation(longestPath):
     transactionList = []
     client = pymongo.MongoClient()
@@ -171,21 +168,16 @@ def getTransactionInformation(longestPath):
             transactionList = [transactionInfo]
     return transactionList
 
-def getCustomerId(nodeList):
-    nodeMap = []
+def getCustomerId(node):
     client = pymongo.MongoClient()
     db = client.MoneyLaundering
-
-    for node in nodeList:
-        customer = db.mappedTransactions.find({'tupleId' : node},{'customerId':1,'_id':0})
-        for info in customer:
-            for k,v in info.items():
-                try:
-                    nodeMap.append(v)
-                except:
-                    nodeMap = [v]
-
-    return nodeMap
+    customer = db.mappedTransactions.find({'tupleId' : node},{'customerId':1,'_id':0})
+    customerId = None
+    for info in customer:
+        for k,v in info.items():
+            print(v)
+            customerId = v
+    return customerId
 
 def main():
 
