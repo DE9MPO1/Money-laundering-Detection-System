@@ -1,3 +1,6 @@
+
+import drawGraph as dG
+
 #edgeList = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8),(8,9),(8,10),(9,10)]
 
 #This File contains methods which deal with
@@ -79,6 +82,7 @@ def splitEdgeList(edgeList,graph,sourceNodes):
     print("New Edge Lists after splitting")
     for row in newEdgeList:
         print(row)
+        dG.drawGraph(row)
     return newEdgeList
 
 
