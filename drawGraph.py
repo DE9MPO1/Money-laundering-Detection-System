@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 
-def drawGraph(edgeList):
+def drawGraph(edgeList,imageFileName):
     G=nx.Graph()
     # adding a list of edges:
     G.add_edges_from(edgeList)
@@ -13,7 +13,11 @@ def drawGraph(edgeList):
     print("Edges of graph: ")
     print(G.edges())
 
-    nx.draw_networkx(G)
-    plt.savefig("simple_path.png") # save as png
+
+    plt.ion()
     plt.show() # display
+    nx.draw_networkx(G)
+    plt.savefig(imageFileName)  # save as png
+    plt.draw()
+    plt.pause(0.001)
 

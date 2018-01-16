@@ -80,9 +80,11 @@ def splitEdgeList(edgeList,graph,sourceNodes):
         except:
             newEdgeList =[row]
     print("New Edge Lists after splitting")
+    i = 0
     for row in newEdgeList:
         print(row)
-        dG.drawGraph(row)
+        dG.drawGraph(row,"Graph"+str(i)+".png")
+        i += 1
     return newEdgeList
 
 
