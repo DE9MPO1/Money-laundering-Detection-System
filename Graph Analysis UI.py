@@ -1,9 +1,9 @@
 from tkinter import *
 import GraphAnalysis as ga
-
+import GraphGeneration as gg
 def getGraphAnalysisResults():
     edgeList = [(1, 2), (1, 3), (2, 3), (2, 4), (3, 4), (3, 5), (3, 6), (4, 5), (4, 6), (5, 6), (7, 8), (8, 9), (8, 10),
-                (9, 10)]
+                (9, 10),(11,12),(11,13),(12,14),(13,14)]
     g = ga.initializeGraph(edgeList)
     graph = ga.gg.generateGraph(edgeList)
     vertices = ga.gg.getVertices(edgeList)
@@ -58,22 +58,17 @@ def getGraphAnalysisResults():
         g = ga.initializeGraph(edgeList)
         g.topologicalSort()
         mapOfNodes = ga.mapTopologicalStack(g)
-        ga.longestDistance(newNodeValues[count], mapOfNodes, g)
+        longestPathInfo = ga.longestDistance(newNodeValues[count], mapOfNodes, g)
+
+
+        print("Longest Path for dest = %d and source = %d" % (destNodes[count],sourceNodes[count]))
+        longestPath = ga.getlongestPath(longestPathInfo,destNodes[count],sourceNodes[count])
+        for items in ga.getTransactionInformation(longestPath):
+            for k,v in items.items():
+                list4.insert(END,str(k) + " " + str(v))
+            list4.insert(END,"\n")
+
         count += 1
-
-    print("Longest Path for dest = %d and source = %d" % (10, 7))
-    longestPath = ga.getlongestPath({8: [7, 8], 9: [8, 9], 10: [9, 10]}, 10, 7)
-    for items in ga.getTransactionInformation(longestPath):
-        for k,v in items.items():
-            list4.insert(END,str(k) + " " + str(v))
-        list4.insert(END,"\n")
-
-    print("Longest Path for dest = %d and source = %d" % (6, 1))
-    longestPath = ga.getlongestPath({2: [1, 2], 3: [2, 3], 4: [3, 4], 5: [4, 5], 6: [5, 6]}, 6, 1)
-    for items in ga.getTransactionInformation(longestPath):
-        for k,v in items.items():
-            list4.insert(END,str(k) + " " + str(v))
-        list4.insert(END,"\n")
 
 
 window = Tk()
