@@ -13,7 +13,7 @@ def drawGraph(edgeList,imageFileName):
     print("Edges of graph: ")
     print(G.edges())
 
-
+    plt.figure()
     plt.ion()
     plt.show() # display
     nx.draw_networkx(G)
